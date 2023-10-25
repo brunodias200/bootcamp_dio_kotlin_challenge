@@ -4,6 +4,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.just
+import io.mockk.runs
 import io.mockk.verify
 import me.dio.credit.application.system.entity.Address
 import me.dio.credit.application.system.entity.Customer
@@ -63,6 +65,18 @@ class CustomerServiceTest {
         verify(exactly = 1) { customerRepository.findById(fakeId) }
     }
 
+    @Test
+    fun `teste should delete test by id`(){
+        val fakeId: Long = Random.nextLong()
+        val fakeCustomer: Customer = buildCustomer(id=fakeId)
+        every { customerRepository.findById(fakeId) } returns Optional.of(fakeCustomer)
+        every { customerRepository.delete(fakeCustomer) } just runs
+
+        customerService.delete(fakeId)
+
+        verify(exactly = 1) { customerRepository.findById(fakeId) }
+        verify(exactly = 1) { customerRepository.delete(fakeCustomer) }
+    }
     private fun `buildCustomer`(
         firstName: String = "Bruno",
         lastName: String = "Dias",
